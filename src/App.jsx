@@ -69,18 +69,18 @@ const HERO = {
   parent:     ["#7c2d12","#ea580c"],
 };
 
-// Per-card texture patterns (overlaid on hero gradient)
-const HERO_PATTERNS = {
-  lesson:     { img:"repeating-linear-gradient(-55deg,rgba(255,255,255,0.07) 0px,rgba(255,255,255,0.07) 1px,transparent 1px,transparent 10px)", sz:"auto" },
-  timetable:  { img:"linear-gradient(rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.07) 1px,transparent 1px)", sz:"28px 28px" },
-  testgen:    { img:"radial-gradient(circle,rgba(255,255,255,0.2) 1.5px,transparent 1.5px)", sz:"14px 14px" },
-  correction: { img:"repeating-linear-gradient(0deg,rgba(255,255,255,0.07) 0px,rgba(255,255,255,0.07) 1px,transparent 1px,transparent 18px)", sz:"auto" },
-  vault:      { img:"repeating-linear-gradient(30deg,rgba(255,255,255,0.06) 0px,rgba(255,255,255,0.06) 1px,transparent 1px,transparent 14px),repeating-linear-gradient(-30deg,rgba(255,255,255,0.06) 0px,rgba(255,255,255,0.06) 1px,transparent 1px,transparent 14px)", sz:"auto" },
-  notebook:   { img:"repeating-linear-gradient(0deg,rgba(255,255,255,0.09) 0px,rgba(255,255,255,0.09) 1px,transparent 1px,transparent 20px),repeating-linear-gradient(90deg,rgba(255,255,255,0.04) 0px,rgba(255,255,255,0.04) 1px,transparent 1px,transparent 60px)", sz:"auto" },
-  cnp:        { img:"repeating-linear-gradient(45deg,rgba(255,255,255,0.05) 0px,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 9px),repeating-linear-gradient(-45deg,rgba(255,255,255,0.05) 0px,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 9px)", sz:"auto" },
-  advisor:    { img:"radial-gradient(circle,rgba(255,255,255,0.14) 1.5px,transparent 1.5px),radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px)", sz:"22px 22px,11px 11px" },
-  inspection: { img:"repeating-linear-gradient(60deg,rgba(255,255,255,0.05) 0px,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 16px)", sz:"auto" },
-  parent:     { img:"radial-gradient(ellipse at 15% 85%,rgba(255,255,255,0.14) 0%,transparent 45%),radial-gradient(ellipse at 85% 15%,rgba(255,255,255,0.14) 0%,transparent 45%),radial-gradient(circle,rgba(255,255,255,0.08) 1px,transparent 1px)", sz:"auto,auto,20px 20px" },
+// Real photos per card — gradient overlaid on top at ~80% opacity
+const HERO_PHOTOS = {
+  lesson:     "https://picsum.photos/seed/classroom101/960/200",
+  timetable:  "https://picsum.photos/seed/schedule202/960/200",
+  testgen:    "https://picsum.photos/seed/science303/960/200",
+  correction: "https://picsum.photos/seed/grading404/960/200",
+  vault:      "https://picsum.photos/seed/library505/960/200",
+  notebook:   "https://picsum.photos/seed/notebook606/960/200",
+  cnp:        "https://picsum.photos/seed/document707/960/200",
+  advisor:    "https://picsum.photos/seed/meeting808/960/200",
+  inspection: "https://picsum.photos/seed/inspect909/960/200",
+  parent:     "https://picsum.photos/seed/family010/960/200",
 };
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
@@ -812,16 +812,10 @@ const CardHero = ({ proc, lang }) => {
   return (
     <div style={{
       position:"relative", height:160, overflow:"hidden",
-      background:`linear-gradient(140deg, ${from} 0%, ${to} 100%)`,
+      background: HERO_PHOTOS[proc.id]
+        ? `linear-gradient(140deg,${from}cc 0%,${to}bb 100%),url(${HERO_PHOTOS[proc.id]}) center/cover no-repeat`
+        : `linear-gradient(140deg,${from} 0%,${to} 100%)`,
     }}>
-      {/* per-card texture */}
-      {HERO_PATTERNS[proc.id] && (
-        <div style={{
-          position:"absolute", inset:0,
-          backgroundImage:HERO_PATTERNS[proc.id].img,
-          backgroundSize:HERO_PATTERNS[proc.id].sz,
-        }} />
-      )}
       {/* big ghost icon */}
       <div style={{
         position:"absolute", bottom:-20, right: lang==="ar" ? "auto" : -20, left: lang==="ar" ? -20 : "auto",
