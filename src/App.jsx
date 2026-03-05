@@ -8,38 +8,26 @@ import {
   Users, Brain, CheckCircle2, AlertCircle, Layers,
 } from "lucide-react";
 
-// ─── Animated background ──────────────────────────────────────────────────────
-const Orb = ({ color, w, h, x, y, dur, delay: d }) => (
-  <motion.div
-    style={{
-      position: "fixed", width: w, height: h, borderRadius: "50%",
-      background: `radial-gradient(ellipse at 40% 40%, ${color} 0%, transparent 68%)`,
-      filter: "blur(90px)", opacity: 0.28,
-      left: x, top: y, pointerEvents: "none", zIndex: 0,
-    }}
-    animate={{
-      x: [0, 50, -35, 25, 0],
-      y: [0, -40, 55, -20, 0],
-      scale: [1, 1.1, 0.93, 1.06, 1],
-    }}
-    transition={{ duration: dur, delay: d, repeat: Infinity, ease: "easeInOut" }}
-  />
-);
-
 const Background = () => (
-  <div style={{ position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
-    <Orb color="#6366f1" w={720} h={720} x="-180px" y="-180px" dur={22}  delay={0} />
-    <Orb color="#14b8a6" w={620} h={620} x="62%"    y="-120px" dur={27}  delay={3} />
-    <Orb color="#a855f7" w={520} h={520} x="32%"    y="22%"    dur={19}  delay={5} />
-    <Orb color="#f97316" w={460} h={460} x="-60px"  y="52%"    dur={24}  delay={1} />
-    <Orb color="#ec4899" w={560} h={560} x="72%"    y="58%"    dur={30}  delay={4} />
-    <Orb color="#3b82f6" w={500} h={500} x="44%"    y="72%"    dur={21}  delay={7} />
-    <Orb color="#f59e0b" w={380} h={380} x="18%"    y="78%"    dur={26}  delay={2} />
-    {/* subtle noise overlay */}
-    <svg style={{ position:"absolute", inset:0, width:"100%", height:"100%", opacity:0.035 }}>
-      <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
-      <rect width="100%" height="100%" filter="url(#noise)" />
-    </svg>
+  <div style={{ position:"fixed", inset:0, zIndex:0, pointerEvents:"none" }}>
+    {/* Base */}
+    <div style={{ position:"absolute", inset:0, background:"linear-gradient(160deg,#f4f7ff 0%,#eef1f9 55%,#f2f5ff 100%)" }} />
+    {/* Dot matrix */}
+    <div style={{
+      position:"absolute", inset:0,
+      backgroundImage:"radial-gradient(circle,rgba(79,70,229,0.11) 1px,transparent 1px)",
+      backgroundSize:"30px 30px",
+    }} />
+    {/* Subtle right-side bleed */}
+    <div style={{
+      position:"absolute", top:0, right:0, width:"35%", height:"100%",
+      background:"linear-gradient(to left,rgba(124,58,237,0.04),transparent)",
+    }} />
+    {/* Top accent bar */}
+    <div style={{
+      position:"absolute", top:0, left:0, right:0, height:3,
+      background:"linear-gradient(90deg,#4f46e5 0%,#7c3aed 40%,#0d9488 100%)",
+    }} />
   </div>
 );
 
@@ -79,6 +67,20 @@ const HERO = {
   advisor:    ["#312e81","#4f46e5"],
   inspection: ["#1e293b","#475569"],
   parent:     ["#7c2d12","#ea580c"],
+};
+
+// Per-card texture patterns (overlaid on hero gradient)
+const HERO_PATTERNS = {
+  lesson:     { img:"repeating-linear-gradient(-55deg,rgba(255,255,255,0.07) 0px,rgba(255,255,255,0.07) 1px,transparent 1px,transparent 10px)", sz:"auto" },
+  timetable:  { img:"linear-gradient(rgba(255,255,255,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.07) 1px,transparent 1px)", sz:"28px 28px" },
+  testgen:    { img:"radial-gradient(circle,rgba(255,255,255,0.2) 1.5px,transparent 1.5px)", sz:"14px 14px" },
+  correction: { img:"repeating-linear-gradient(0deg,rgba(255,255,255,0.07) 0px,rgba(255,255,255,0.07) 1px,transparent 1px,transparent 18px)", sz:"auto" },
+  vault:      { img:"repeating-linear-gradient(30deg,rgba(255,255,255,0.06) 0px,rgba(255,255,255,0.06) 1px,transparent 1px,transparent 14px),repeating-linear-gradient(-30deg,rgba(255,255,255,0.06) 0px,rgba(255,255,255,0.06) 1px,transparent 1px,transparent 14px)", sz:"auto" },
+  notebook:   { img:"repeating-linear-gradient(0deg,rgba(255,255,255,0.09) 0px,rgba(255,255,255,0.09) 1px,transparent 1px,transparent 20px),repeating-linear-gradient(90deg,rgba(255,255,255,0.04) 0px,rgba(255,255,255,0.04) 1px,transparent 1px,transparent 60px)", sz:"auto" },
+  cnp:        { img:"repeating-linear-gradient(45deg,rgba(255,255,255,0.05) 0px,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 9px),repeating-linear-gradient(-45deg,rgba(255,255,255,0.05) 0px,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 9px)", sz:"auto" },
+  advisor:    { img:"radial-gradient(circle,rgba(255,255,255,0.14) 1.5px,transparent 1.5px),radial-gradient(circle,rgba(255,255,255,0.06) 1px,transparent 1px)", sz:"22px 22px,11px 11px" },
+  inspection: { img:"repeating-linear-gradient(60deg,rgba(255,255,255,0.05) 0px,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 16px)", sz:"auto" },
+  parent:     { img:"radial-gradient(ellipse at 15% 85%,rgba(255,255,255,0.14) 0%,transparent 45%),radial-gradient(ellipse at 85% 15%,rgba(255,255,255,0.14) 0%,transparent 45%),radial-gradient(circle,rgba(255,255,255,0.08) 1px,transparent 1px)", sz:"auto,auto,20px 20px" },
 };
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
@@ -812,12 +814,14 @@ const CardHero = ({ proc, lang }) => {
       position:"relative", height:160, overflow:"hidden",
       background:`linear-gradient(140deg, ${from} 0%, ${to} 100%)`,
     }}>
-      {/* dot grid */}
-      <div style={{
-        position:"absolute", inset:0,
-        backgroundImage:"radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px)",
-        backgroundSize:"22px 22px",
-      }} />
+      {/* per-card texture */}
+      {HERO_PATTERNS[proc.id] && (
+        <div style={{
+          position:"absolute", inset:0,
+          backgroundImage:HERO_PATTERNS[proc.id].img,
+          backgroundSize:HERO_PATTERNS[proc.id].sz,
+        }} />
+      )}
       {/* big ghost icon */}
       <div style={{
         position:"absolute", bottom:-20, right: lang==="ar" ? "auto" : -20, left: lang==="ar" ? -20 : "auto",
