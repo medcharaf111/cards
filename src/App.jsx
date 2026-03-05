@@ -882,10 +882,7 @@ export default function App() {
         position:"relative", zIndex:10,
       }}>
         <div style={{ maxWidth:1160, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", gap:20, flexWrap:"wrap" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:14 }}>
-            <img src="/minassa.svg" alt="منصة الشعب" style={{ height:40 }} />
-            <div style={{ fontSize:24, fontWeight:900, color:T.hi, letterSpacing:"-0.02em" }}>{u.title}</div>
-          </div>
+          <img src="/minassa.svg" alt="منصة الشعب" style={{ height:40 }} />
 
           {/* Language toggle */}
           <div style={{ display:"flex", background:"rgba(255,255,255,0.6)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", border:`1.5px solid rgba(226,232,240,0.8)`, borderRadius:12, padding:3, alignSelf:"flex-start" }}>
