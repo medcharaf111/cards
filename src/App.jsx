@@ -78,6 +78,7 @@ const HERO = {
   cnp:        ["#7f1d1d","#dc2626"],
   advisor:    ["#312e81","#4f46e5"],
   inspection: ["#1e293b","#475569"],
+  parent:     ["#7c2d12","#ea580c"],
 };
 
 // ─── i18n ─────────────────────────────────────────────────────────────────────
@@ -101,8 +102,8 @@ const UI = {
 };
 
 const ROLE_LABELS = {
-  en: { Teacher:"Teacher", Student:"Student", Advisor:"Advisor", Director:"Director", Inspector:"Inspector", CNP:"CNP", AI:"AI" },
-  ar: { Teacher:"معلّم", Student:"تلميذ", Advisor:"مستشار", Director:"مدير", Inspector:"متفقّد", CNP:"هيئة المناهج", AI:"ذكاء اصطناعي" },
+  en: { Teacher:"Teacher", Student:"Student", Advisor:"Advisor", Director:"Director", Inspector:"Inspector", CNP:"CNP", AI:"AI", Parent:"Parent" },
+  ar: { Teacher:"أستاذ", Student:"تلميذ", Advisor:"متفقد مساعد", Director:"مدير", Inspector:"متفقّد", CNP:"هيئة المناهج", AI:"ذكاء اصطناعي", Parent:"ولي الأمر" },
 };
 const ROLE_META = {
   Teacher:  { color:"#2563eb", Icon:GraduationCap },
@@ -112,6 +113,7 @@ const ROLE_META = {
   Inspector:{ color:"#ea580c", Icon:Search         },
   CNP:      { color:"#dc2626", Icon:FileText       },
   AI:       { color:"#7c3aed", Icon:Sparkles       },
+  Parent:   { color:"#ea580c", Icon:Users          },
 };
 
 // ─── Font helper ──────────────────────────────────────────────────────────────
@@ -221,12 +223,12 @@ const LessonContent = ({ lang }) => {
       val_t:"One important requirement", val_b:"A teacher must be officially assigned to a subject before they can create lessons for it. If no assignment exists, the platform warns them and the generate button stays disabled until a director sets up the assignment.",
     },
     ar: {
-      intro:"يستطيع المعلمون إنشاء خطط دروس كاملة ومنظمة في دقائق. تتيح المنصة ثلاثة مسارات مختلفة للبدء — وجميعها تنتهي بدرس جاهز للتدريس، مناسب للمادة والمستوى الدراسي.",
+      intro:"يستطيع الأساتذة إنشاء خطط دروس كاملة ومنظمة في دقائق. تتيح المنصة ثلاثة مسارات مختلفة للبدء — وجميعها تنتهي بدرس جاهز للتدريس، مناسب للمادة والمستوى الدراسي.",
       p1t:"البدء من الصفر", p1b:"افتح تبويب الدروس، اختر المادة والصف، واكتب ما تريد تدريسه. تُنشئ المنصة الدرس الكامل — الأهداف، المحتوى، الأمثلة، والأسئلة التدريبية — فوراً.",
       p2t:"اسأل المساعد الذكي", p2b:"تحدث بشكل طبيعي:", p2em:`"أنشئ درساً عن الكسور للصف الثالث."`, p2b2:"يفهم المساعد الطلب ويبني الدرس تلقائياً.",
       p3t:"استخدم خطة من المكتبة", p3b:"تصفّح مكتبة خطط الدروس (الخزينة)، ابحث عن خطة جاهزة تناسب فصلك، واستخدمها كما هي أو أضف تعليماتك ليكيّفها الذكاء الاصطناعي لتلاميذك.",
-      out_t:"ما يُنتجه الذكاء الاصطناعي فعلياً", out_b:"كل درس يتضمن عنواناً واضحاً، أهداف تعلم، محتوى الدرس الكامل، أمثلة تطبيقية، وأسئلة تدريبية — مصممة للفئة العمرية الصحيحة. يمكن للمعلم قراءة أي جزء وتعديله أو إعادة توليده قبل استخدامه.",
-      val_t:"متطلب أساسي واحد", val_b:"يجب أن يكون المعلم معيناً رسمياً على المادة قبل إنشاء دروس لها. في حال عدم وجود تعيين، تنبّه المنصة المعلم وتبقي زر الإنشاء معطلاً حتى يُعدّ المدير التعيين.",
+      out_t:"ما يُنتجه الذكاء الاصطناعي فعلياً", out_b:"كل درس يتضمن عنواناً واضحاً، أهداف تعلم، محتوى الدرس الكامل، أمثلة تطبيقية، وأسئلة تدريبية — مصممة للفئة العمرية الصحيحة. يمكن للأستاذ قراءة أي جزء وتعديله أو إعادة توليده قبل استخدامه.",
+      val_t:"متطلب أساسي واحد", val_b:"يجب أن يكون الأستاذ معيناً رسمياً على المادة قبل إنشاء دروس لها. في حال عدم وجود تعيين، تنبّه المنصة الأستاذ وتبقي زر الإنشاء معطلاً حتى يُعدّ المدير التعيين.",
     },
   }[lang];
   return (
@@ -253,11 +255,11 @@ const TimetableContent = ({ lang }) => {
       p2blue:"blue for planned,", p2green:"green for taught,", p2red:"red for cancelled.", p2b2:"Students and advisors can view this calendar too.",
     },
     ar: {
-      intro:"تدير المنصة نوعين مختلفين تماماً من الجداول — أحدهما لإدارة أوقات عمل المعلم، والآخر لتخطيط ما سيُدرَّس.",
-      p1t:"جدول العمل الأسبوعي", p1b1:"يحدد مدير المدرسة ساعات عمل كل معلم لكل يوم من أيام الأسبوع.",
-      p1b2:"يُستخدم تلقائياً لتتبع الحضور: عند تسجيل الدخول، يقارن النظام الوقت بالجدول ويسجل المعلم حاضراً أو متأخراً أو غائباً.",
-      p2t:"تقويم التدريس", p2b1:"يخطط المعلمون الدروس في أيام محددة عبر إضافة جلسات إلى التقويم.",
-      p2blue:"أزرق للمخطط،", p2green:"أخضر للمُدرَّس،", p2red:"أحمر للملغى.", p2b2:"يمكن للتلاميذ والمستشارين الاطلاع على التقويم.",
+      intro:"تدير المنصة نوعين مختلفين تماماً من الجداول — أحدهما لإدارة أوقات عمل الأستاذ، والآخر لتخطيط ما سيُدرَّس.",
+      p1t:"جدول العمل الأسبوعي", p1b1:"يحدد مدير المدرسة ساعات عمل كل أستاذ لكل يوم من أيام الأسبوع.",
+      p1b2:"يُستخدم تلقائياً لتتبع الحضور: عند تسجيل الدخول، يقارن النظام الوقت بالجدول ويسجل الأستاذ حاضراً أو متأخراً أو غائباً.",
+      p2t:"تقويم التدريس", p2b1:"يخطط الأساتذة الدروس في أيام محددة عبر إضافة جلسات إلى التقويم.",
+      p2blue:"أزرق للمخطط،", p2green:"أخضر للمُدرَّس،", p2red:"أحمر للملغى.", p2b2:"يمكن للتلاميذ والمتفقدين المساعدين الاطلاع على التقويم.",
     },
   }[lang];
   return (
@@ -300,18 +302,18 @@ const TestGenContent = ({ lang }) => {
       diff:[["< 40%","Easy",T.green],["40–60%","Medium",T.gold],["60–80%","Med-Hard",T.orange],["> 80%","Hard",T.red]],
     },
     ar: {
-      intro:"تُولَّد الاختبارات تلقائياً من محتوى الدرس — لا يكتب المعلمون الأسئلة يدوياً. يراجع المعلم دائماً ويوافق قبل أن يرى أي تلميذ الاختبار.",
+      intro:"تُولَّد الاختبارات تلقائياً من محتوى الدرس — لا يكتب الأساتذة الأسئلة يدوياً. يراجع الأستاذ دائماً ويوافق قبل أن يرى أي تلميذ الاختبار.",
       mcq:"اختبارات الاختيار من متعدد", qa:"اختبارات الإجابة المكتوبة",
-      m1t:"اختر درساً",              m1b:"يضغط المعلم على 'إنشاء اختبار' على أي درس.",
+      m1t:"اختر درساً",              m1b:"يضغط الأستاذ على 'إنشاء اختبار' على أي درس.",
       m2t:"الذكاء الاصطناعي يقرأ",   m2b:"تُنشئ المنصة أسئلة بأربعة خيارات لكل منها مع الإجابة الصحيحة والشرح.",
-      m3t:"المعلم يراجع",            m3b:"يمكنه الموافقة أو الرفض أو تعديل أي سؤال قبل وصوله للتلاميذ.",
+      m3t:"الأستاذ يراجع",            m3b:"يمكنه الموافقة أو الرفض أو تعديل أي سؤال قبل وصوله للتلاميذ.",
       q1t:"اختر درساً",               q1b:"نفس نقطة البداية لاختبار إجابات مكتوبة.",
       q2t:"الذكاء الاصطناعي يكتب أسئلة", q2b:"أسئلة تتطلب التفكير والشرح، مع النقاط الرئيسية لكل إجابة.",
-      q3t:"المعلم يراجع",             q3b:"نفس عملية الموافقة — لا يرى أي تلميذ شيئاً حتى يعطي المعلم الضوء الأخضر.",
+      q3t:"الأستاذ يراجع",             q3b:"نفس عملية الموافقة — لا يرى أي تلميذ شيئاً حتى يعطي الأستاذ الضوء الأخضر.",
       pers_t:"اختبارات مخصصة تتكيف مع كل تلميذ",
       pers_b:"يرى النظام أداء كل تلميذ السابق ويضبط مستوى الصعوبة تلقائياً — التلاميذ المتعثرون يحصلون على أسئلة أسهل، والمتفوقون على أصعب.",
-      lock_t:"لا شيء يُنشر دون موافقة المعلم",
-      lock_b:"كل اختبار يبدأ كمسودة. لا يمكن للتلاميذ رؤيته حتى يوافق المعلم صراحةً عليه.",
+      lock_t:"لا شيء يُنشر دون موافقة الأستاذ",
+      lock_b:"كل اختبار يبدأ كمسودة. لا يمكن للتلاميذ رؤيته حتى يوافق الأستاذ صراحةً عليه.",
       diff:[["< 40%","سهل",T.green],["40–60%","متوسط",T.gold],["60–80%","متوسط صعب",T.orange],["> 80%","صعب",T.red]],
     },
   }[lang];
@@ -364,17 +366,17 @@ const CorrectionContent = ({ lang }) => {
       statuses:[["Submitted","Student handed it in"],["AI Graded","AI has scored it"],["Teacher Review","Teacher is checking"],["Finalized","Grade is official"]],
     },
     ar: {
-      intro:"طريقة التصحيح تعتمد على نوع الاختبار. الاختيار من متعدد يُصحَّح فوراً. الأسئلة المكتوبة تحظى بمراجعة أولية من الذكاء الاصطناعي ثم المعلم يقرر.",
-      mcq:"الاختيار من متعدد: نتائج فورية", qa:"الأسئلة المكتوبة: ذكاء اصطناعي + معلم",
+      intro:"طريقة التصحيح تعتمد على نوع الاختبار. الاختيار من متعدد يُصحَّح فوراً. الأسئلة المكتوبة تحظى بمراجعة أولية من الذكاء الاصطناعي ثم الأستاذ يقرر.",
+      mcq:"الاختيار من متعدد: نتائج فورية", qa:"الأسئلة المكتوبة: ذكاء اصطناعي + أستاذ",
       mc1t:"التلميذ يُجري الاختبار",    mc1b:"يجيب التلميذ على كل سؤال باختيار خيار من الأربعة.",
       mc2t:"التصحيح فوري",              mc2b:"في اللحظة التي يُرسل فيها، تظهر النتيجة. لا انتظار.",
       mc3t:"تفصيل كامل يُعرض",         mc3b:"يرى التلميذ ما أصابه وما أخطأ فيه، مع شرح لكل إجابة.",
-      mcNote:"تلقائي بالكامل — لا يحتاج لأي إجراء من المعلم.",
+      mcNote:"تلقائي بالكامل — لا يحتاج لأي إجراء من الأستاذ.",
       q1t:"بيئة اختبار محمية",          q1b:"يعمل الاختبار في وضع الشاشة الكاملة ويُرسل تلقائياً عند انتهاء الوقت.",
       q2t:"الذكاء الاصطناعي يصحح",    q2b:"يُقيّم الذكاء الاصطناعي كل إجابة ويكتب ملاحظات تفصيلية.",
-      q3t:"المعلم يراجع ويُنهي",       q3b:"يرى المعلم الدرجات والتعليقات، يعدّل ما يراه، ثم يُنهي. عندها تُحفظ الدرجة رسمياً.",
+      q3t:"الأستاذ يراجع ويُنهي",       q3b:"يرى الأستاذ الدرجات والتعليقات، يعدّل ما يراه، ثم يُنهي. عندها تُحفظ الدرجة رسمياً.",
       statusLabel:"مراحل الاختبار المكتوب",
-      statuses:[["مُرسَل","التلميذ سلّمه"],["صُحِّح بالذكاء","الذكاء الاصطناعي قيّمه"],["مراجعة المعلم","المعلم يفحصه"],["مُنتهٍ","الدرجة رسمية"]],
+      statuses:[["مُرسَل","التلميذ سلّمه"],["صُحِّح بالذكاء","الذكاء الاصطناعي قيّمه"],["مراجعة الأستاذ","الأستاذ يفحصه"],["مُنتهٍ","الدرجة رسمية"]],
     },
   }[lang];
   const sc = [T.blue, T.purple, T.gold, T.green];
@@ -432,17 +434,17 @@ const VaultContent = ({ lang }) => {
       e2t:"Customize it with AI",     e2b:"The teacher adds instructions like", e2em:`"make it more interactive"`, e2b2:"or", e2em2:`"focus more on vocabulary"`, e2b3:", and the AI rewrites the plan incorporating their notes while keeping all curriculum requirements.",
     },
     ar: {
-      intro:"الخزينة هي المكتبة المشتركة للمدرسة من خطط الدروس الرسمية المعتمدة. يديرها المستشارون ويستخدمها المعلمون في فصولهم.",
+      intro:"الخزينة هي المكتبة المشتركة للمدرسة من خطط الدروس الرسمية المعتمدة. يديرها المتفقدون المساعدون ويستخدمها الأساتذة في فصولهم.",
       srcTitle:"كيف تدخل الخطط إلى المكتبة",
       sources:[
-        { title:"من ملف PDF المنهج الرسمي",   color:T.red,    roles:["Advisor","AI"],      body:"يرفع المستشار ملف PDF لدليل المنهج. يُنشئ الذكاء الاصطناعي 20-30 خطة درس كاملة تغطي السنة الدراسية." },
-        { title:"خطة واحدة بالذكاء الاصطناعي",color:T.orange, roles:["Advisor","AI"],      body:"يحدد المستشار موضوعاً فيُنشئ الذكاء الاصطناعي خطة درس واحدة مفصلة." },
-        { title:"كتابة يدوية",                 color:T.teal,   roles:["Advisor"],           body:"يكتب المستشار الخطة مباشرة في المنصة بدون ذكاء اصطناعي. مفيد للمحتوى المتخصص." },
-        { title:"مستوردة من معلم",             color:T.blue,   roles:["Advisor","Teacher"], body:"إذا أنشأ معلم درساً متميزاً، يمكن للمستشار سحبه إلى المكتبة ليستفيد منه الجميع." },
+        { title:"من ملف PDF المنهج الرسمي",   color:T.red,    roles:["Advisor","AI"],      body:"يرفع المتفقد المساعد ملف PDF لدليل المنهج. يُنشئ الذكاء الاصطناعي 20-30 خطة درس كاملة تغطي السنة الدراسية." },
+        { title:"خطة واحدة بالذكاء الاصطناعي",color:T.orange, roles:["Advisor","AI"],      body:"يحدد المتفقد المساعد موضوعاً فيُنشئ الذكاء الاصطناعي خطة درس واحدة مفصلة." },
+        { title:"كتابة يدوية",                 color:T.teal,   roles:["Advisor"],           body:"يكتب المتفقد المساعد الخطة مباشرة في المنصة بدون ذكاء اصطناعي. مفيد للمحتوى المتخصص." },
+        { title:"مستوردة من أستاذ",             color:T.blue,   roles:["Advisor","Teacher"], body:"إذا أنشأ أستاذ درساً متميزاً، يمكن للمتفقد مساعد سحبه إلى المكتبة ليستفيد منه الجميع." },
       ],
-      exTitle:"كيف يستخدم المعلمون خطط المكتبة",
-      e1t:"استخدامها كما هي",         e1b:"بنقرة واحدة تُنسخ الخطة إلى قائمة دروس المعلم. تسجل المكتبة الاستخدام.",
-      e2t:"تخصيصها بالذكاء الاصطناعي", e2b:"يضيف المعلم تعليمات مثل", e2em:`"اجعلها تفاعلية"`, e2b2:"أو", e2em2:`"ركز على المفردات"`, e2b3:"، ويعيد الذكاء الاصطناعي كتابتها مع الحفاظ على المنهج.",
+      exTitle:"كيف يستخدم الأساتذة خطط المكتبة",
+      e1t:"استخدامها كما هي",         e1b:"بنقرة واحدة تُنسخ الخطة إلى قائمة دروس الأستاذ. تسجل المكتبة الاستخدام.",
+      e2t:"تخصيصها بالذكاء الاصطناعي", e2b:"يضيف الأستاذ تعليمات مثل", e2em:`"اجعلها تفاعلية"`, e2b2:"أو", e2em2:`"ركز على المفردات"`, e2b3:"، ويعيد الذكاء الاصطناعي كتابتها مع الحفاظ على المنهج.",
     },
   }[lang];
   return (
@@ -488,15 +490,15 @@ const NotebookContent = ({ lang }) => {
       loop_t:"The full loop", loop_b:"Teacher writes exercises → Student answers → Teacher marks the work → Student reads feedback — all in the same notebook page.",
     },
     ar: {
-      intro:"كل تلميذ لديه كراس رقمي يعمل كسجل يومي. كل يوم يحصل على صفحته. يضع المعلمون التمارين، يكتب التلاميذ الإجابات، ويصحح المعلمون ويعلقون — كل شيء في مكان واحد.",
-      st:"تجربة التلميذ", te:"تجربة المعلم",
+      intro:"كل تلميذ لديه كراس رقمي يعمل كسجل يومي. كل يوم يحصل على صفحته. يضع الأساتذة التمارين، يكتب التلاميذ الإجابات، ويصحح الأساتذة ويعلقون — كل شيء في مكان واحد.",
+      st:"تجربة التلميذ", te:"تجربة الأستاذ",
       s1t:"يفتح صفحة اليوم",  s1b:"صفحة اليوم موجودة تلقائياً عند الفتح.",
       s2t:"يرى التمارين",     s2b:"تظهر التمارين في أعلى الصفحة ويكتب التلميذ إجاباته.",
-      s3t:"يحصل على ملاحظات", s3b:"بعد التصحيح يرى التلميذ علاماته وتعليقات المعلم.",
+      s3t:"يحصل على ملاحظات", s3b:"بعد التصحيح يرى التلميذ علاماته وتعليقات الأستاذ.",
       t1t:"يبحث عن تلميذ",   t1b:"قائمة التلاميذ قابلة للبحث في تبويب الكراريس.",
-      t2t:"يحدد التمارين",   t2b:"يكتب المعلم التمارين مباشرة في صفحة التلميذ.",
+      t2t:"يحدد التمارين",   t2b:"يكتب الأستاذ التمارين مباشرة في صفحة التلميذ.",
       t3t:"يصحح ويعلق",     t3b:"يحدد علامة لكل إجابة ويكتب تعليقاً. التلميذ يراه فوراً.",
-      loop_t:"الحلقة الكاملة", loop_b:"المعلم يكتب التمارين ← التلميذ يجيب ← المعلم يصحح ← التلميذ يقرأ الملاحظات — في نفس الصفحة.",
+      loop_t:"الحلقة الكاملة", loop_b:"الأستاذ يكتب التمارين ← التلميذ يجيب ← الأستاذ يصحح ← التلميذ يقرأ الملاحظات — في نفس الصفحة.",
     },
   }[lang];
   return (
@@ -537,14 +539,14 @@ const CnpContent = ({ lang }) => {
       acc_title:"Who can access these guides", acc_b:"CNP members can upload and see their own files. Admins can manage and approve everything. Teachers and advisors see approved guides only. Students and parents have no access.",
     },
     ar: {
-      intro:"هيئة المناهج هي الجهة الرسمية للمنهج. ترفع ملفات PDF الرسمية التي يستخدمها المعلمون. بعد الاعتماد تصبح مصدراً لتوليد خطط الدروس في الخزينة.",
+      intro:"هيئة المناهج هي الجهة الرسمية للمنهج. ترفع ملفات PDF الرسمية التي يستخدمها الأساتذة. بعد الاعتماد تصبح مصدراً لتوليد خطط الدروس في الخزينة.",
       st1t:"هيئة المناهج ترفع الدليل",           st1b:"يرفع عضو ملف PDF الرسمي للمادة. يدخل في حالة انتظار.",
-      st2t:"عضو أول يعتمده",                      st2b:"يفحص مراجع أول الوثيقة ويعتمدها. بعدها يصبح متاحاً للمستشارين.",
-      st3t:"المستشارون يمكنهم الاستخدام",         st3b:"يمكن للمستشارين تحديد الدليل لتوليد خطط سنة كاملة أو خطط فردية.",
+      st2t:"عضو أول يعتمده",                      st2b:"يفحص مراجع أول الوثيقة ويعتمدها. بعدها يصبح متاحاً للمتفقدين مساعدين.",
+      st3t:"المتفقدون المساعدون يمكنهم الاستخدام",         st3b:"يمكن للمتفقدين مساعدين تحديد الدليل لتوليد خطط سنة كاملة أو خطط فردية.",
       st4t:"الذكاء الاصطناعي يقرأ ويُنشئ الخطط", st4b:"يعالج الذكاء الاصطناعي الدليل كاملاً ويكتب خطط دروس متكاملة.",
       cur_t:"كيف يعمل الآن",    cur_b:"يقرأ الذكاء الاصطناعي الملف في كل مرة — سريع لكن يُعالَج الملف مراراً.",
       fut_t:"إلى أين نتجه",     fut_b:"مستقبلاً تُعالَج الملفات مرة واحدة وتُخزَّن كقاعدة معرفة — أسرع وأذكى.",
-      acc_title:"صلاحيات الوصول", acc_b:"هيئة المناهج ترفع وترى ملفاتها. المشرفون يديرون ويعتمدون. المعلمون والمستشارون يرون المعتمد فقط. التلاميذ وأولياء الأمور لا يملكون وصولاً.",
+      acc_title:"صلاحيات الوصول", acc_b:"هيئة المناهج ترفع وترى ملفاتها. المشرفون يديرون ويعتمدون. الأساتذة والمتفقدون المساعدون يرون المعتمد فقط. التلاميذ وأولياء الأمور لا يملكون وصولاً.",
     },
   }[lang];
   return (
@@ -585,18 +587,18 @@ const AdvisorContent = ({ lang }) => {
       rev:"Advisors can review:", types:["Lessons","Multiple-choice tests","Written tests"],
     },
     ar: {
-      intro:"بعد اعتماد الاختبار وإجرائه، يتدخل المستشارون كطبقة مستقلة لضمان الجودة — لتقييمها وترك ملاحظات مهنية، لا لاعتمادها أو رفضها.",
+      intro:"بعد اعتماد الاختبار وإجرائه، يتدخل المتفقدون المساعدون كطبقة مستقلة لضمان الجودة — لتقييمها وترك ملاحظات مهنية، لا لاعتمادها أو رفضها.",
       hi_t:"طبقتا اعتماد مستقلتان بتصميم متعمد",
-      hi_b:"المعلم يعتمد للتلاميذ. المستشار يراجع للجودة. رأي المستشار لا يحجب ما يراه التلاميذ أبداً.",
+      hi_b:"الأستاذ يعتمد للتلاميذ. المتفقد المساعد يراجع للجودة. رأي المتفقد المساعد لا يحجب ما يراه التلاميذ أبداً.",
       jour_t:"الرحلة الكاملة لاختبار",
       journey:[
         { label:"الذكاء الاصطناعي يُنشئ",  sub:"الأسئلة تُولَّد من محتوى الدرس",          color:T.purple, Icon:Brain         },
-        { label:"المعلم يراجع ويعتمد",     sub:"يعدّل إذا لزم ثم ينشر للتلاميذ",             color:T.blue,   Icon:GraduationCap },
+        { label:"الأستاذ يراجع ويعتمد",     sub:"يعدّل إذا لزم ثم ينشر للتلاميذ",             color:T.blue,   Icon:GraduationCap },
         { label:"التلاميذ يجرون الاختبار",  sub:"يصبح مرئياً ويكمله التلاميذ",               color:T.green,  Icon:User          },
-        { label:"المستشار يراجع الجودة",   sub:"يمنح تقييماً من 1-5 ويكتب ملاحظات",        color:T.indigo, Icon:Shield        },
-        { label:"المعلم يرى الملاحظات",    sub:"مرئية في تبويب المراجعات",                  color:T.teal,   Icon:CheckCircle2  },
+        { label:"المتفقد المساعد يراجع الجودة",   sub:"يمنح تقييماً من 1-5 ويكتب ملاحظات",        color:T.indigo, Icon:Shield        },
+        { label:"الأستاذ يرى الملاحظات",    sub:"مرئية في تبويب المراجعات",                  color:T.teal,   Icon:CheckCircle2  },
       ],
-      rev:"المستشارون يمكنهم مراجعة:", types:["الدروس","اختبارات الاختيار من متعدد","الاختبارات المكتوبة"],
+      rev:"المتفقدون المساعدون يمكنهم مراجعة:", types:["الدروس","اختبارات الاختيار من متعدد","الاختبارات المكتوبة"],
     },
   }[lang];
   return (
@@ -644,16 +646,16 @@ const InspectionContent = ({ lang }) => {
       s4t:"Ongoing mentorship (separate)",    s4b:"An advisor can also be formally assigned to a teacher as a long-term mentor for continuous professional support.",
     },
     ar: {
-      intro:"تدعم المنصة نظامَي تفقد متوازيَين على مستويين مختلفين — أحدهما للمناطق والآخر للمدارس والمعلمين. كلاهما مستقل ولا يشمل ذكاءً اصطناعياً.",
+      intro:"تدعم المنصة نظامَي تفقد متوازيَين على مستويين مختلفين — أحدهما للمناطق والآخر للمدارس والأساتذة. كلاهما مستقل ولا يشمل ذكاءً اصطناعياً.",
       reg:"التفقد الإقليمي", sch:"التفقد على مستوى المدرسة",
       r1t:"يُعيَّن المتفقد لمنطقة",     r1b:"مسؤول عن منطقة جغرافية تشمل مدارس متعددة.",
       r2t:"يجدول الزيارات وينفذها",     r2b:"تشمل زيارات دورية، متابعة شكاوى، مراجعات سنوية، وتفقداً مفاجئاً.",
       r3t:"يكتب تقريراً",              r3b:"بعد كل زيارة يُرفع تقرير رسمي للمتفقد العام.",
       r4t:"المتفقد العام يعتمد أو يُعيد", r4b:"يمكن الاعتماد أو الرفض أو طلب مراجعات. الملخصات الشهرية تمر بنفس المسار.",
-      s1t:"المديرية تجدول التفقد",    s1b:"تُنشئ السلطة التعليمية تفقداً لمعلم محدد في مدرسته.",
-      s2t:"قد يتولاه مستشار",           s2b:"يمكن تعيين مستشار لإجراء التفقد — مفيد للتقييمات المتخصصة.",
+      s1t:"المديرية تجدول التفقد",    s1b:"تُنشئ السلطة التعليمية تفقداً لأستاذ محدد في مدرسته.",
+      s2t:"قد يتولاه متفقد مساعد",           s2b:"يمكن تعيين متفقد مساعد لإجراء التفقد — مفيد للتقييمات المتخصصة.",
       s3t:"اكتمال التفقد",            s3b:"مراحل: مجدول ← قيد التنفيذ ← مكتمل ← مُقدَّم، مع تقرير كامل.",
-      s4t:"الإشراف المستمر (منفصل)",   s4b:"يمكن تعيين مستشار كمُرشد طويل الأمد للمعلم — علاقة مستمرة للدعم المهني.",
+      s4t:"الإشراف المستمر (منفصل)",   s4b:"يمكن تعيين متفقد مساعد كمُرشد طويل الأمد للأستاذ — علاقة مستمرة للدعم المهني.",
     },
   }[lang];
   return (
@@ -681,6 +683,72 @@ const InspectionContent = ({ lang }) => {
   );
 };
 
+const ParentContent = ({ lang }) => {
+  const s = {
+    en: {
+      intro:"Parents get their own dedicated space to stay connected with their child's school life — no need to contact the school office. Test scores, attendance, and teacher communication are all in one place.",
+      lnk_t:"Link your children to your account",
+      lnk_b:"Search for your child and link them to your account. You can be a parent, guardian, or relative — each child gets their own profile card showing their performance at a glance.",
+      perf_t:"Track your child's progress",
+      perf_b:"View test scores, overall average, and gamification stats — XP points, level, and learning streak. Every test result is listed with its score so you always know where your child stands.",
+      chat_t:"Chat directly with teachers",
+      chat_b:"Start a private conversation with any teacher who teaches your child. Share files, ask questions, receive updates. Teachers only see messages from parents of their own students.",
+      att_t:"Monitor attendance",
+      att_b:"View your child's daily attendance — present, absent, late, or excused — for any date range. Monthly summaries show the overall attendance rate with a visual progress bar.",
+      tabs_t:"Four dashboard tabs",
+      tabs:[
+        { label:"Students",   body:"Per-child cards with XP, level, test scores, and assigned teachers." },
+        { label:"Attendance", body:"Daily records and monthly summary for each child." },
+        { label:"Chats",      body:"All conversations with teachers, with unread message badges." },
+        { label:"Overview",   body:"Totals at a glance: children linked, tests taken, average score." },
+      ],
+    },
+    ar: {
+      intro:"يمتلك أولياء الأمور فضاءً خاصاً للبقاء على اطلاع بحياة أبنائهم المدرسية — دون الحاجة للتواصل مع إدارة المدرسة. نتائج الاختبارات وسجلات الحضور والتواصل مع الأساتذة كل شيء في مكان واحد.",
+      lnk_t:"ربط أبنائك بحسابك",
+      lnk_b:"ابحث عن ابنك واربطه بحسابك. يمكنك أن تكون والداً أو وصياً أو قريباً — لكل تلميذ بطاقة ملف خاصة تُظهر أداءه في لمحة.",
+      perf_t:"تتبع أداء ابنك",
+      perf_b:"اطّلع على درجات الاختبارات والمعدل العام ونقاط التحفيز — نقاط XP والمستوى وسلسلة التعلم. كل نتيجة مدرجة بدرجتها حتى تعرف دائماً أين يقف ابنك.",
+      chat_t:"تواصل مباشرة مع الأساتذة",
+      chat_b:"ابدأ محادثة خاصة مع أي أستاذ يدرّس ابنك. أرسل ملفات، اطرح أسئلة، واستقبل تحديثات. الأساتذة يرون فقط رسائل أولياء أمور تلاميذهم.",
+      att_t:"متابعة الحضور",
+      att_b:"اطّلع على سجل حضور ابنك اليومي — حاضر أو غائب أو متأخر أو معذور — لأي فترة زمنية. الملخصات الشهرية تُظهر نسبة الحضور الإجمالية بشريط مرئي.",
+      tabs_t:"أربعة تبويبات في لوحة التحكم",
+      tabs:[
+        { label:"التلاميذ",      body:"بطاقات لكل تلميذ مع XP والمستوى والدرجات والأساتذة المعيّنين." },
+        { label:"الحضور",        body:"سجلات يومية وملخص شهري لكل تلميذ." },
+        { label:"المحادثات",     body:"جميع محادثاتك مع الأساتذة مع شارة الرسائل غير المقروءة." },
+        { label:"نظرة عامة",    body:"الإجماليات دفعة واحدة: التلاميذ المرتبطون والاختبارات والمعدل." },
+      ],
+    },
+  }[lang];
+  const tabColors = [T.orange, T.purple, T.teal, T.green];
+  return (
+    <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
+      <p style={{ fontSize:14, color:T.md, lineHeight:1.85 }}>{s.intro}</p>
+      <TwoCol>
+        <Panel accent={T.orange} title={s.lnk_t}  roles={["Parent"]}           lang={lang}><p style={{ fontSize:12.5, color:T.md, lineHeight:1.75 }}>{s.lnk_b}</p></Panel>
+        <Panel accent={T.purple} title={s.perf_t} roles={["Parent"]}           lang={lang}><p style={{ fontSize:12.5, color:T.md, lineHeight:1.75 }}>{s.perf_b}</p></Panel>
+      </TwoCol>
+      <TwoCol>
+        <Panel accent={T.teal}   title={s.chat_t} roles={["Parent","Teacher"]} lang={lang}><p style={{ fontSize:12.5, color:T.md, lineHeight:1.75 }}>{s.chat_b}</p></Panel>
+        <Panel accent={T.green}  title={s.att_t}  roles={["Parent"]}           lang={lang}><p style={{ fontSize:12.5, color:T.md, lineHeight:1.75 }}>{s.att_b}</p></Panel>
+      </TwoCol>
+      <div style={{ background:T.sect, border:`1.5px solid ${T.bdr}`, borderRadius:14, padding:"18px 20px" }}>
+        <div style={{ fontWeight:700, fontSize:13, color:T.hi, marginBottom:14 }}>{s.tabs_t}</div>
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:10 }}>
+          {s.tabs.map((t, i) => (
+            <div key={i} style={{ background:`${tabColors[i]}08`, border:`1.5px solid ${tabColors[i]}20`, borderRadius:10, padding:"10px 12px" }}>
+              <div style={{ fontWeight:700, fontSize:12, color:tabColors[i], marginBottom:4 }}>{t.label}</div>
+              <div style={{ fontSize:11.5, color:T.md, lineHeight:1.6 }}>{t.body}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Procedures ───────────────────────────────────────────────────────────────
 const PROCEDURES = [
   { id:"lesson",     num:"01", icon:BookOpen,     hasAi:true,  accent:T.blue,
@@ -695,7 +763,7 @@ const PROCEDURES = [
 
   { id:"testgen",    num:"03", icon:FlaskConical,  hasAi:true,  accent:T.purple,
     title:{ en:"Test Generation",                  ar:"توليد الاختبارات"         },
-    tagline:{ en:"The AI writes the questions. The teacher decides what's fair.", ar:"الذكاء الاصطناعي يكتب الأسئلة. المعلم يقرر ما هو عادل." },
+    tagline:{ en:"The AI writes the questions. The teacher decides what's fair.", ar:"الذكاء الاصطناعي يكتب الأسئلة. الأستاذ يقرر ما هو عادل." },
     roles:["Teacher","AI"], Content:TestGenContent },
 
   { id:"correction", num:"04", icon:CheckSquare,   hasAi:true,  accent:T.green,
@@ -710,7 +778,7 @@ const PROCEDURES = [
 
   { id:"notebook",   num:"06", icon:NotebookPen,   hasAi:false, accent:T.pink,
     title:{ en:"Student Notebooks",               ar:"كراريس التلاميذ"              },
-    tagline:{ en:"A daily digital notebook connecting teachers and students.", ar:"كراس رقمي يومي يربط المعلمين بالتلاميذ." },
+    tagline:{ en:"A daily digital notebook connecting teachers and students.", ar:"كراس رقمي يومي يربط الأساتذة بالتلاميذ." },
     roles:["Teacher","Student"], Content:NotebookContent },
 
   { id:"cnp",        num:"07", icon:FileText,       hasAi:true,  accent:T.red,
@@ -719,14 +787,19 @@ const PROCEDURES = [
     roles:["CNP","Advisor"], Content:CnpContent },
 
   { id:"advisor",    num:"08", icon:Eye,            hasAi:false, accent:T.indigo,
-    title:{ en:"Advisor Quality Review",           ar:"مراجعة المستشار للجودة"    },
-    tagline:{ en:"Professional peer review — a quality check for teacher content.", ar:"مراجعة مهنية بالأقران — ضمان جودة محتوى المعلمين." },
+    title:{ en:"Advisor Quality Review",           ar:"مراجعة المتفقد المساعد للجودة"    },
+    tagline:{ en:"Professional peer review — a quality check for teacher content.", ar:"مراجعة مهنية بالأقران — ضمان جودة محتوى الأساتذة." },
     roles:["Advisor","Teacher"], Content:AdvisorContent },
 
   { id:"inspection", num:"09", icon:Search,         hasAi:false, accent:T.slate,
     title:{ en:"Inspections & Oversight",          ar:"التفقد والرقابة"          },
     tagline:{ en:"Regional and school-level inspections, all tracked digitally.", ar:"التفقد الإقليمي وعلى مستوى المدرسة — كل شيء مُتتبَّع رقمياً." },
     roles:["Inspector","Advisor"], Content:InspectionContent },
+
+  { id:"parent",     num:"10", icon:Users,          hasAi:false, accent:T.orange,
+    title:{ en:"Parent Portal",                    ar:"بوابة أولياء الأمور"      },
+    tagline:{ en:"Track your child's scores, attendance, and chat with teachers — all in one place.", ar:"تابع درجات ابنك وحضوره وتواصل مع الأساتذة — كل شيء في مكان واحد." },
+    roles:["Parent","Teacher"], Content:ParentContent },
 ];
 
 // ─── Card Hero ────────────────────────────────────────────────────────────────
