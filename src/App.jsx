@@ -5,7 +5,7 @@ import {
   NotebookPen, FileText, Eye, Search, ChevronDown,
   Sparkles, User, GraduationCap, Shield, Building2,
   ClipboardList, ArrowRight, Star, Zap, Lock,
-  Users, Brain, CheckCircle2, AlertCircle, Layers,
+  Users, Brain, CheckCircle2, AlertCircle,
 } from "lucide-react";
 
 const Background = () => (
@@ -878,31 +878,13 @@ export default function App() {
         backdropFilter:"blur(24px)",
         WebkitBackdropFilter:"blur(24px)",
         borderBottom:`1px solid rgba(255,255,255,0.6)`,
-        padding:"32px 40px 28px",
+        padding:"16px 40px",
         position:"relative", zIndex:10,
       }}>
-        <div style={{ maxWidth:1160, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"flex-start", gap:20, flexWrap:"wrap" }}>
-          <div>
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:8 }}>
-              <div style={{ background:"linear-gradient(135deg,#4f46e5,#7c3aed)", borderRadius:12, padding:10 }}>
-                <Layers size={22} color="#fff" strokeWidth={1.8} />
-              </div>
-              <div>
-                <div style={{ fontSize:24, fontWeight:900, color:T.hi, letterSpacing:"-0.02em" }}>{u.title}</div>
-                <div style={{ fontSize:13, color:T.lo, marginTop:1 }}>{u.subtitle}</div>
-              </div>
-            </div>
-            <p style={{ fontSize:14, color:T.md, lineHeight:1.8, maxWidth:560, marginTop:10 }}>{u.heroText}</p>
-            <div style={{ display:"flex", gap:18, marginTop:12, flexWrap:"wrap" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:7 }}>
-                <div style={{ width:8, height:8, borderRadius:"50%", background:T.purple }} />
-                <span style={{ fontSize:12, color:T.md }}><strong style={{ color:T.hi }}>{aiCount}</strong> {u.featuresAi}</span>
-              </div>
-              <div style={{ display:"flex", alignItems:"center", gap:7 }}>
-                <div style={{ width:8, height:8, borderRadius:"50%", background:T.lo }} />
-                <span style={{ fontSize:12, color:T.md }}><strong style={{ color:T.hi }}>{noAiCount}</strong> {u.featuresManual}</span>
-              </div>
-            </div>
+        <div style={{ maxWidth:1160, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", gap:20, flexWrap:"wrap" }}>
+          <div style={{ display:"flex", alignItems:"center", gap:14 }}>
+            <img src="/minassa.svg" alt="منصة الشعب" style={{ height:40 }} />
+            <div style={{ fontSize:24, fontWeight:900, color:T.hi, letterSpacing:"-0.02em" }}>{u.title}</div>
           </div>
 
           {/* Language toggle */}
