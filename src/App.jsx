@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Scrollama, Step as ScrollamaStep } from "react-scrollama";
 import {
   BookOpen, Calendar, FlaskConical, CheckSquare, Archive,
-  NotebookPen, FileText, Eye, Search, ChevronDown,
+  NotebookPen, FileText, Eye, Search,
   Sparkles, User, GraduationCap, Shield, Building2,
   ClipboardList, ArrowRight, Star, Zap, Lock,
   Users, Brain, CheckCircle2, AlertCircle,
@@ -10,20 +11,16 @@ import {
 
 const Background = () => (
   <div style={{ position:"fixed", inset:0, zIndex:0, pointerEvents:"none" }}>
-    {/* Base */}
     <div style={{ position:"absolute", inset:0, background:"linear-gradient(160deg,#f4f7ff 0%,#eef1f9 55%,#f2f5ff 100%)" }} />
-    {/* Dot matrix */}
     <div style={{
       position:"absolute", inset:0,
       backgroundImage:"radial-gradient(circle,rgba(79,70,229,0.11) 1px,transparent 1px)",
       backgroundSize:"30px 30px",
     }} />
-    {/* Subtle right-side bleed */}
     <div style={{
       position:"absolute", top:0, right:0, width:"35%", height:"100%",
       background:"linear-gradient(to left,rgba(124,58,237,0.04),transparent)",
     }} />
-    {/* Top accent bar */}
     <div style={{
       position:"absolute", top:0, left:0, right:0, height:3,
       background:"linear-gradient(90deg,#4f46e5 0%,#7c3aed 40%,#0d9488 100%)",
@@ -31,28 +28,14 @@ const Background = () => (
   </div>
 );
 
-// ─── Light theme tokens ───────────────────────────────────────────────────────
+// ─── Theme tokens ──────────────────────────────────────────────────────────────
 const T = {
-  page:    "#f0f2f6",
-  card:    "#ffffff",
-  sect:    "#f7f8fb",
-  sunken:  "#eef0f4",
-  bdr:     "#e5e7eb",
-  bdr2:    "#d1d5db",
-  hi:      "#111827",
-  md:      "#4b5563",
-  lo:      "#9ca3af",
-  blue:    "#3b82f6",
-  purple:  "#7c3aed",
-  teal:    "#0d9488",
-  green:   "#059669",
-  gold:    "#d97706",
-  red:     "#dc2626",
-  pink:    "#db2777",
-  indigo:  "#4f46e5",
-  orange:  "#ea580c",
-  slate:   "#475569",
-  ai:      "#7c3aed",
+  page:"#f0f2f6", card:"#ffffff", sect:"#f7f8fb", sunken:"#eef0f4",
+  bdr:"#e5e7eb", bdr2:"#d1d5db",
+  hi:"#111827", md:"#4b5563", lo:"#9ca3af",
+  blue:"#3b82f6", purple:"#7c3aed", teal:"#0d9488", green:"#059669",
+  gold:"#d97706", red:"#dc2626", pink:"#db2777", indigo:"#4f46e5",
+  orange:"#ea580c", slate:"#475569", ai:"#7c3aed",
 };
 
 // Per-card hero gradients
@@ -69,7 +52,6 @@ const HERO = {
   parent:     ["#7c2d12","#ea580c"],
 };
 
-// Real photos per card — gradient overlaid on top at ~80% opacity
 const HERO_PHOTOS = {
   lesson:     "https://picsum.photos/seed/classroom101/960/200",
   timetable:  "https://picsum.photos/seed/schedule202/960/200",
@@ -83,23 +65,21 @@ const HERO_PHOTOS = {
   parent:     "https://picsum.photos/seed/family010/960/200",
 };
 
-// ─── i18n ─────────────────────────────────────────────────────────────────────
+// ─── i18n ──────────────────────────────────────────────────────────────────────
 const UI = {
   en: {
-    title:"منصة الشعب", subtitle:"Platform — How it works",
-    heroText:"A complete overview of every major feature — explained for everyone, not just developers. Click any card to learn how it works.",
-    featuresAi:"features powered by AI", featuresManual:"features fully manual",
-    all:"All features", ai:"AI-powered", manual:"Manual / Rules",
-    expandAll:"Expand all", collapseAll:"Collapse all", aiBadge:"AI-powered",
+    title:"منصة الشعب",
+    aiBadge:"AI-powered",
+    connectedTo:"connects to",
     footer:"Platform documentation · All AI features require human review before reaching students",
+    scrollHint:"Scroll to explore each feature",
   },
   ar: {
-    title:"منصة الشعب", subtitle:"المنصة — كيف تعمل",
-    heroText:"نظرة شاملة على كل ميزة رئيسية في المنصة — مشروحة للجميع، وليس للمطورين فقط. اضغط على أي بطاقة لمعرفة كيفية عملها.",
-    featuresAi:"ميزة مدعومة بالذكاء الاصطناعي", featuresManual:"ميزة يدوية بالكامل",
-    all:"جميع الميزات", ai:"ذكاء اصطناعي", manual:"يدوي",
-    expandAll:"توسيع الكل", collapseAll:"طي الكل", aiBadge:"مدعوم بالذكاء الاصطناعي",
+    title:"منصة الشعب",
+    aiBadge:"مدعوم بالذكاء الاصطناعي",
+    connectedTo:"يتصل بـ",
     footer:"توثيق المنصة · جميع مخرجات الذكاء الاصطناعي تستلزم مراجعة بشرية قبل وصولها للتلاميذ",
+    scrollHint:"مرر للاستكشاف",
   },
 };
 
@@ -118,12 +98,26 @@ const ROLE_META = {
   Parent:   { color:"#ea580c", Icon:Users          },
 };
 
-// ─── Font helper ──────────────────────────────────────────────────────────────
+// ─── Connections map ────────────────────────────────────────────────────────────
+// Defines which features each feature links to (directional, showing the data/workflow relationship)
+const CONNECTIONS = {
+  lesson:     ["testgen","notebook","vault"],
+  timetable:  ["lesson","inspection"],
+  testgen:    ["correction"],
+  correction: ["notebook","parent"],
+  vault:      ["lesson","cnp"],
+  notebook:   ["parent"],
+  cnp:        ["vault"],
+  advisor:    ["vault","lesson"],
+  inspection: ["advisor","timetable"],
+  parent:     ["notebook","correction"],
+};
+
 const font = (lang) => lang === "ar"
   ? "'Cairo','Segoe UI',system-ui,sans-serif"
   : "'Inter',system-ui,sans-serif";
 
-// ─── Atoms ────────────────────────────────────────────────────────────────────
+// ─── Atoms ──────────────────────────────────────────────────────────────────────
 const RolePill = ({ role, lang }) => {
   const { color, Icon } = ROLE_META[role] ?? { color:T.slate, Icon:User };
   return (
@@ -211,7 +205,7 @@ const TwoCol = ({ children, gap=14 }) => (
   <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap }}>{children}</div>
 );
 
-// ─── Content components ───────────────────────────────────────────────────────
+// ─── Content components ─────────────────────────────────────────────────────────
 
 const LessonContent = ({ lang }) => {
   const rtl = lang === "ar";
@@ -606,7 +600,7 @@ const AdvisorContent = ({ lang }) => {
   return (
     <div style={{ display:"flex", flexDirection:"column", gap:18 }}>
       <p style={{ fontSize:14, color:T.md, lineHeight:1.85 }}>{s.intro}</p>
-      <Highlight icon={Layers} color={T.indigo} title={s.hi_t}>{s.hi_b}</Highlight>
+      <Highlight icon={Shield} color={T.indigo} title={s.hi_t}>{s.hi_b}</Highlight>
       <div style={{ background:T.sect, border:`1.5px solid ${T.bdr}`, borderRadius:14, padding:"20px 22px" }}>
         <div style={{ fontWeight:700, fontSize:13.5, color:T.hi, marginBottom:18 }}>{s.jour_t}</div>
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
@@ -751,7 +745,7 @@ const ParentContent = ({ lang }) => {
   );
 };
 
-// ─── Procedures ───────────────────────────────────────────────────────────────
+// ─── Procedures ─────────────────────────────────────────────────────────────────
 const PROCEDURES = [
   { id:"lesson",     num:"01", icon:BookOpen,     hasAi:true,  accent:T.blue,
     title:{ en:"Lesson Planning",                  ar:"التخطيط للدروس"          },
@@ -804,88 +798,240 @@ const PROCEDURES = [
     roles:["Parent","Teacher"], Content:ParentContent },
 ];
 
-// ─── Card Hero ────────────────────────────────────────────────────────────────
-const CardHero = ({ proc, lang }) => {
-  const [from, to] = HERO[proc.id];
+// ─── Progress Dots ──────────────────────────────────────────────────────────────
+const ProgressDots = ({ active, rtl }) => (
+  <div style={{
+    position:"fixed",
+    ...(rtl ? { right:20 } : { left:20 }),
+    top:"50%", transform:"translateY(-50%)",
+    zIndex:50,
+    display:"flex", flexDirection:"column", gap:7,
+    background:"rgba(255,255,255,0.72)",
+    backdropFilter:"blur(10px)",
+    WebkitBackdropFilter:"blur(10px)",
+    borderRadius:20,
+    border:"1px solid rgba(226,232,240,0.7)",
+    padding:"10px 7px",
+  }}>
+    {PROCEDURES.map((p, i) => (
+      <motion.div
+        key={p.id}
+        animate={{
+          width: i === active ? 8 : 5,
+          height: i === active ? 8 : 5,
+          background: i === active ? p.accent : "rgba(0,0,0,0.13)",
+          boxShadow: i === active ? `0 0 0 3px ${p.accent}28` : "none",
+        }}
+        transition={{ duration:0.25, ease:[0.4,0,0.2,1] }}
+        style={{ borderRadius:"50%", flexShrink:0 }}
+      />
+    ))}
+  </div>
+);
+
+// ─── Scroll Step Card (left column) ─────────────────────────────────────────────
+const StepCard = ({ proc, isActive, lang }) => {
+  const [colorFrom, colorTo] = HERO[proc.id];
   const Icon = proc.icon;
+  const connections = CONNECTIONS[proc.id] ?? [];
+
+  return (
+    <motion.div
+      animate={{
+        opacity: isActive ? 1 : 0.3,
+        scale: isActive ? 1 : 0.95,
+        y: isActive ? 0 : 6,
+      }}
+      transition={{ duration:0.35, ease:[0.4,0,0.2,1] }}
+      style={{
+        width:"100%",
+        background: isActive ? "rgba(255,255,255,0.96)" : "rgba(255,255,255,0.55)",
+        borderRadius:20,
+        overflow:"hidden",
+        border:`2px solid ${isActive ? proc.accent+"55" : "rgba(226,232,240,0.4)"}`,
+        boxShadow: isActive
+          ? `0 14px 52px ${proc.accent}25, 0 2px 10px rgba(0,0,0,0.07)`
+          : "0 2px 8px rgba(0,0,0,0.04)",
+        backdropFilter:"blur(12px)",
+        WebkitBackdropFilter:"blur(12px)",
+        transition:"border-color 0.3s, box-shadow 0.3s, background 0.3s",
+      }}
+    >
+      {/* Compact hero strip */}
+      <div style={{
+        height:90,
+        background: HERO_PHOTOS[proc.id]
+          ? `linear-gradient(140deg,${colorFrom}cc 0%,${colorTo}bb 100%),url(${HERO_PHOTOS[proc.id]}) center/cover no-repeat`
+          : `linear-gradient(140deg,${colorFrom} 0%,${colorTo} 100%)`,
+        display:"flex", alignItems:"center", padding:"0 20px", gap:14,
+        position:"relative", overflow:"hidden",
+      }}>
+        {/* Ghost icon */}
+        <div style={{ position:"absolute", bottom:-8, right: lang==="ar" ? "auto" : -8, left: lang==="ar" ? -8 : "auto", opacity:0.08, pointerEvents:"none" }}>
+          <Icon size={80} color="#fff" strokeWidth={1} />
+        </div>
+        <div style={{ background:"rgba(255,255,255,0.2)", borderRadius:10, padding:8, flexShrink:0, zIndex:1 }}>
+          <Icon size={20} color="#fff" strokeWidth={1.8} />
+        </div>
+        <div style={{ zIndex:1, flex:1, minWidth:0 }}>
+          <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.6)", letterSpacing:"0.07em" }}>{proc.num}</div>
+          <div style={{ fontSize:16, fontWeight:800, color:"#fff", letterSpacing:"-0.02em", lineHeight:1.2, whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{proc.title[lang]}</div>
+        </div>
+        {proc.hasAi && (
+          <div style={{ zIndex:1, background:"rgba(255,255,255,0.18)", border:"1px solid rgba(255,255,255,0.28)", borderRadius:16, padding:"3px 10px", fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.9)", display:"flex", alignItems:"center", gap:4, flexShrink:0 }}>
+            <Sparkles size={9} strokeWidth={2.5} /> AI
+          </div>
+        )}
+      </div>
+
+      {/* Body */}
+      <div style={{ padding:"14px 20px 18px" }}>
+        <p style={{ fontSize:13, color:T.md, lineHeight:1.65, marginBottom:12 }}>{proc.tagline[lang]}</p>
+        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom: connections.length ? 12 : 0 }}>
+          {proc.roles.map(r => <RolePill key={r} role={r} lang={lang} />)}
+        </div>
+        {/* Connections preview */}
+        {connections.length > 0 && (
+          <div style={{ display:"flex", alignItems:"center", gap:5, flexWrap:"wrap", paddingTop:10, borderTop:`1px solid ${T.bdr}` }}>
+            <span style={{ fontSize:10, color:T.lo, fontWeight:600 }}>{lang==="ar" ? "يتصل بـ" : "links to"}</span>
+            {connections.map(cid => {
+              const cp = PROCEDURES.find(p => p.id === cid);
+              if (!cp) return null;
+              const CIcon = cp.icon;
+              return (
+                <span key={cid} style={{ display:"inline-flex", alignItems:"center", gap:3, background:`${cp.accent}10`, border:`1px solid ${cp.accent}28`, borderRadius:10, padding:"2px 8px", fontSize:10, fontWeight:600, color:cp.accent }}>
+                  <CIcon size={9} strokeWidth={2.5} />{cp.num}
+                </span>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── Detail Panel (right sticky) ────────────────────────────────────────────────
+const DetailPanel = ({ proc, lang }) => {
+  const rtl = lang === "ar";
+  const [colorFrom, colorTo] = HERO[proc.id];
+  const Icon = proc.icon;
+  const { Content } = proc;
   const u = UI[lang];
+  const connections = CONNECTIONS[proc.id] ?? [];
+
   return (
     <div style={{
-      position:"relative", height:160, overflow:"hidden",
-      background: HERO_PHOTOS[proc.id]
-        ? `linear-gradient(140deg,${from}cc 0%,${to}bb 100%),url(${HERO_PHOTOS[proc.id]}) center/cover no-repeat`
-        : `linear-gradient(140deg,${from} 0%,${to} 100%)`,
+      height:"100%",
+      background:"rgba(255,255,255,0.93)",
+      backdropFilter:"blur(20px)",
+      WebkitBackdropFilter:"blur(20px)",
+      borderRadius:22,
+      overflow:"hidden",
+      border:`1.5px solid ${proc.accent}30`,
+      boxShadow:`0 20px 64px ${proc.accent}18, 0 4px 20px rgba(0,0,0,0.07)`,
+      display:"flex", flexDirection:"column",
     }}>
-      {/* big ghost icon */}
+      {/* Hero */}
       <div style={{
-        position:"absolute", bottom:-20, right: lang==="ar" ? "auto" : -20, left: lang==="ar" ? -20 : "auto",
-        opacity:0.1,
+        height:164, flexShrink:0,
+        background: HERO_PHOTOS[proc.id]
+          ? `linear-gradient(140deg,${colorFrom}cc 0%,${colorTo}bb 100%),url(${HERO_PHOTOS[proc.id]}) center/cover no-repeat`
+          : `linear-gradient(140deg,${colorFrom} 0%,${colorTo} 100%)`,
+        position:"relative", overflow:"hidden",
       }}>
-        <Icon size={130} color="#fff" strokeWidth={1} />
-      </div>
-      {/* content */}
-      <div style={{ position:"relative", zIndex:1, padding:"22px 24px", height:"100%", display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-          <span style={{ background:"rgba(255,255,255,0.18)", backdropFilter:"blur(6px)", border:"1px solid rgba(255,255,255,0.25)", borderRadius:20, padding:"3px 12px", fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.9)", letterSpacing:"0.05em" }}>
-            {proc.num}
-          </span>
-          {proc.hasAi && (
-            <span style={{ background:"rgba(255,255,255,0.18)", backdropFilter:"blur(6px)", border:"1px solid rgba(255,255,255,0.25)", borderRadius:20, padding:"3px 12px", fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.95)", display:"inline-flex", alignItems:"center", gap:5 }}>
-              <Sparkles size={10} strokeWidth={2.5} /> {u.aiBadge}
-            </span>
-          )}
+        <div style={{ position:"absolute", bottom:-20, right: rtl ? "auto" : -20, left: rtl ? -20 : "auto", opacity:0.09 }}>
+          <Icon size={130} color="#fff" strokeWidth={1} />
         </div>
-        <div>
-          <div style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", background:"rgba(255,255,255,0.2)", backdropFilter:"blur(8px)", borderRadius:14, padding:10, marginBottom:10 }}>
-            <Icon size={24} color="#fff" strokeWidth={1.8} />
+        <div style={{ position:"relative", zIndex:1, padding:"22px 24px", height:"100%", display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+            <span style={{ background:"rgba(255,255,255,0.18)", backdropFilter:"blur(6px)", border:"1px solid rgba(255,255,255,0.25)", borderRadius:20, padding:"3px 12px", fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.9)", letterSpacing:"0.05em" }}>{proc.num}</span>
+            {proc.hasAi && (
+              <span style={{ background:"rgba(255,255,255,0.18)", backdropFilter:"blur(6px)", border:"1px solid rgba(255,255,255,0.25)", borderRadius:20, padding:"3px 12px", fontSize:11, fontWeight:700, color:"rgba(255,255,255,0.95)", display:"inline-flex", alignItems:"center", gap:5 }}>
+                <Sparkles size={10} strokeWidth={2.5} /> {u.aiBadge}
+              </span>
+            )}
           </div>
-          <div style={{ fontWeight:800, fontSize:17, color:"#fff", letterSpacing:"-0.02em", lineHeight:1.2 }}>{proc.title[lang]}</div>
+          <div>
+            <div style={{ display:"inline-flex", alignItems:"center", justifyContent:"center", background:"rgba(255,255,255,0.2)", backdropFilter:"blur(8px)", borderRadius:14, padding:10, marginBottom:8 }}>
+              <Icon size={24} color="#fff" strokeWidth={1.8} />
+            </div>
+            <div style={{ fontWeight:800, fontSize:20, color:"#fff", letterSpacing:"-0.02em", lineHeight:1.2 }}>{proc.title[lang]}</div>
+          </div>
         </div>
+      </div>
+
+      {/* Scrollable body */}
+      <div style={{ flex:1, overflowY:"auto", padding:"22px 24px 28px" }}>
+        <p style={{ fontSize:13.5, color:T.md, lineHeight:1.7, marginBottom:14 }}>{proc.tagline[lang]}</p>
+        <div style={{ display:"flex", gap:6, flexWrap:"wrap", marginBottom:20, paddingBottom:16, borderBottom:`1px solid ${T.bdr}` }}>
+          {proc.roles.map(r => <RolePill key={r} role={r} lang={lang} />)}
+        </div>
+
+        <Content lang={lang} />
+
+        {/* Connected features */}
+        {connections.length > 0 && (
+          <div style={{ marginTop:28, paddingTop:20, borderTop:`1.5px solid ${T.bdr}` }}>
+            <div style={{ fontSize:10, fontWeight:700, color:T.lo, letterSpacing:"0.07em", textTransform:"uppercase", marginBottom:12 }}>
+              {u.connectedTo}
+            </div>
+            <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+              {connections.map(cid => {
+                const cp = PROCEDURES.find(p => p.id === cid);
+                if (!cp) return null;
+                const CIcon = cp.icon;
+                return (
+                  <div key={cid} style={{ display:"flex", alignItems:"center", gap:9, background:`${cp.accent}08`, border:`1.5px solid ${cp.accent}22`, borderRadius:12, padding:"8px 14px", flexShrink:0 }}>
+                    <div style={{ background:`${cp.accent}18`, borderRadius:8, padding:6, flexShrink:0 }}>
+                      <CIcon size={13} color={cp.accent} strokeWidth={2} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize:10, fontWeight:700, color:cp.accent }}>{cp.num}</div>
+                      <div style={{ fontSize:12, fontWeight:700, color:T.hi }}>{cp.title[lang]}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-// ─── App ──────────────────────────────────────────────────────────────────────
+// ─── App ────────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [lang, setLang]       = useState("en");
-  const [expanded, setExpanded] = useState(new Set());
-  const [filter, setFilter]   = useState("all");
+  const [lang, setLang]         = useState("en");
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  const rtl  = lang === "ar";
-  const u    = UI[lang];
+  const rtl      = lang === "ar";
   const bodyFont = font(lang);
+  const u        = UI[lang];
 
-  const toggle = (id) => {
-    const next = new Set(expanded);
-    next.has(id) ? next.delete(id) : next.add(id);
-    setExpanded(next);
-  };
-
-  const filtered = PROCEDURES.filter(p =>
-    filter === "all" ? true : filter === "ai" ? p.hasAi : !p.hasAi
-  );
-  const aiCount   = PROCEDURES.filter(p => p.hasAi).length;
-  const noAiCount = PROCEDURES.filter(p => !p.hasAi).length;
+  const onStepEnter = ({ data }) => setActiveIndex(data);
 
   return (
     <div dir={rtl ? "rtl" : "ltr"} style={{ background:"transparent", minHeight:"100vh", fontFamily:bodyFont, position:"relative", zIndex:1 }}>
       <Background />
 
+      {/* Progress dots */}
+      <ProgressDots active={activeIndex} rtl={rtl} />
+
       {/* ── Header ── */}
       <div style={{
-        background:"rgba(255,255,255,0.75)",
+        background:"rgba(255,255,255,0.78)",
         backdropFilter:"blur(24px)",
         WebkitBackdropFilter:"blur(24px)",
-        borderBottom:`1px solid rgba(255,255,255,0.6)`,
-        padding:"16px 40px",
-        position:"relative", zIndex:10,
+        borderBottom:"1px solid rgba(255,255,255,0.6)",
+        padding:"14px 40px",
+        position:"sticky", top:0, zIndex:100,
       }}>
-        <div style={{ maxWidth:1160, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", gap:20, flexWrap:"wrap" }}>
-          <img src="/minassa.svg" alt="منصة الشعب" style={{ height:40 }} />
-
+        <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", gap:20 }}>
+          <img src="/minassa.svg" alt="منصة الشعب" style={{ height:38 }} />
           {/* Language toggle */}
-          <div style={{ display:"flex", background:"rgba(255,255,255,0.6)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", border:`1.5px solid rgba(226,232,240,0.8)`, borderRadius:12, padding:3, alignSelf:"flex-start" }}>
+          <div style={{ display:"flex", background:"rgba(255,255,255,0.6)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", border:"1.5px solid rgba(226,232,240,0.8)", borderRadius:12, padding:3 }}>
             {[["en","EN"],["ar","عر"]].map(([l, label]) => (
               <button key={l} onClick={() => setLang(l)} style={{
                 width:52, height:34,
@@ -903,125 +1049,57 @@ export default function App() {
         </div>
       </div>
 
-      {/* ── Filter bar ── */}
+      {/* ── Scroll Story ── */}
       <div style={{
-        background:"rgba(255,255,255,0.80)",
-        backdropFilter:"blur(20px)",
-        WebkitBackdropFilter:"blur(20px)",
-        borderBottom:`1px solid rgba(226,232,240,0.7)`,
-        padding:"12px 40px",
-        display:"flex", alignItems:"center",
-        position:"sticky", top:0, zIndex:40,
+        display:"flex",
+        flexDirection: rtl ? "row-reverse" : "row",
+        alignItems:"flex-start",
+        maxWidth:1400, margin:"0 auto",
+        padding:"0 48px",
       }}>
-        <div style={{ maxWidth:1160, margin:"0 auto", width:"100%", display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
-          {[
-            { id:"all",  label:u.all,    count:PROCEDURES.length, color:T.blue   },
-            { id:"ai",   label:u.ai,     count:aiCount,            color:T.purple },
-            { id:"noai", label:u.manual, count:noAiCount,          color:T.slate  },
-          ].map(f => (
-            <button key={f.id} onClick={() => setFilter(f.id)} style={{
-              display:"inline-flex", alignItems:"center", gap:7,
-              border:`1.5px solid ${filter===f.id ? f.color : T.bdr}`,
-              borderRadius:10, padding:"7px 16px",
-              background: filter===f.id ? `${f.color}10` : "#fff",
-              color: filter===f.id ? f.color : T.md,
-              fontWeight:600, fontSize:12.5, cursor:"pointer",
-              transition:"all 0.15s", fontFamily:bodyFont,
-            }}>
-              {f.label}
-              <span style={{ background: filter===f.id ? `${f.color}18` : T.sect, border:`1px solid ${T.bdr}`, borderRadius:8, padding:"1px 8px", fontSize:11 }}>{f.count}</span>
-            </button>
-          ))}
-          <div style={{ marginLeft:"auto", display:"flex", gap:6 }}>
-            {[[u.expandAll, () => setExpanded(new Set(filtered.map(p=>p.id)))], [u.collapseAll, () => setExpanded(new Set())]].map(([label, action]) => (
-              <button key={label} onClick={action} style={{ background:"#fff", border:`1.5px solid ${T.bdr}`, borderRadius:8, padding:"6px 14px", cursor:"pointer", fontSize:12, color:T.md, fontFamily:bodyFont }}>{label}</button>
-            ))}
-          </div>
-        </div>
-      </div>
 
-      {/* ── Cards grid ── */}
-      <div style={{ padding:"28px 40px 60px", maxWidth:1160, margin:"0 auto" }}>
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:20 }}>
-          {filtered.map((p, idx) => {
-            const isOpen = expanded.has(p.id);
-            const { Content } = p;
-            return (
-              <motion.div
-                key={p.id}
-                initial={{ opacity:0, y:16 }}
-                animate={{ opacity:1, y:0 }}
-                transition={{ delay:idx*0.04, duration:0.3, ease:[0.4,0,0.2,1] }}
-                style={{ gridColumn: isOpen ? "1 / -1" : undefined }}
-              >
-                <div style={{
-                  background:"rgba(255,255,255,0.82)",
-                  backdropFilter:"blur(16px)",
-                  WebkitBackdropFilter:"blur(16px)",
-                  borderRadius:20,
-                  overflow:"hidden",
-                  boxShadow: isOpen
-                    ? `0 12px 48px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(255,255,255,0.9)`
-                    : "0 4px 16px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(255,255,255,0.8)",
-                  border:`1px solid ${isOpen ? `${p.accent}35` : "rgba(226,232,240,0.8)"}`,
-                  transition:"box-shadow 0.3s, border-color 0.3s",
-                }}>
-
-                  {/* Hero */}
-                  <div onClick={() => toggle(p.id)} style={{ cursor:"pointer" }}>
-                    <CardHero proc={p} lang={lang} />
-                  </div>
-
-                  {/* Info bar */}
-                  <div
-                    onClick={() => toggle(p.id)}
-                    style={{ padding:"18px 22px 16px", cursor:"pointer", borderBottom: isOpen ? `1px solid ${T.bdr}` : "none" }}
-                  >
-                    <p style={{ fontSize:13.5, color:T.md, lineHeight:1.6, marginBottom:12 }}>{p.tagline[lang]}</p>
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:8 }}>
-                      <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                        {p.roles.map(r => <RolePill key={r} role={r} lang={lang} />)}
-                      </div>
-                      <motion.div
-                        animate={{ rotate: isOpen ? 180 : 0 }}
-                        transition={{ duration:0.22 }}
-                        style={{ color:T.lo, flexShrink:0 }}
-                      >
-                        <ChevronDown size={18} />
-                      </motion.div>
-                    </div>
-                  </div>
-
-                  {/* Expanded content */}
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        key="body"
-                        initial={{ height:0, opacity:0 }}
-                        animate={{ height:"auto", opacity:1 }}
-                        exit={{ height:0, opacity:0 }}
-                        transition={{ duration:0.32, ease:[0.4,0,0.2,1] }}
-                        style={{ overflow:"hidden" }}
-                      >
-                        <div style={{ padding:"24px 28px 28px", background:"rgba(248,249,252,0.95)" }}>
-                          <Content lang={lang} />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+        {/* Left: Scrollama steps */}
+        <div style={{ width:"48%", paddingTop:40, paddingBottom:80, ...(rtl ? { paddingLeft:28 } : { paddingRight:28 }) }}>
+          <Scrollama onStepEnter={onStepEnter} offset={0.5}>
+            {PROCEDURES.map((p, i) => (
+              <ScrollamaStep key={p.id} data={i}>
+                <div style={{ minHeight:"80vh", display:"flex", alignItems:"center", paddingBottom:20 }}>
+                  <StepCard proc={p} isActive={activeIndex === i} lang={lang} />
                 </div>
-              </motion.div>
-            );
-          })}
+              </ScrollamaStep>
+            ))}
+          </Scrollama>
+        </div>
+
+        {/* Right: Sticky detail panel */}
+        <div style={{
+          width:"52%",
+          position:"sticky", top:68,
+          height:"calc(100vh - 84px)",
+          paddingTop:28, paddingBottom:16,
+          ...(rtl ? { paddingRight:0 } : { paddingLeft:0 }),
+        }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeIndex}
+              initial={{ opacity:0, y:24, scale:0.97 }}
+              animate={{ opacity:1, y:0, scale:1 }}
+              exit={{ opacity:0, y:-16, scale:0.97 }}
+              transition={{ duration:0.38, ease:[0.4,0,0.2,1] }}
+              style={{ height:"100%" }}
+            >
+              <DetailPanel proc={PROCEDURES[activeIndex]} lang={lang} />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
       {/* ── Footer ── */}
       <div style={{
-        background:"rgba(255,255,255,0.70)",
+        background:"rgba(255,255,255,0.72)",
         backdropFilter:"blur(20px)",
         WebkitBackdropFilter:"blur(20px)",
-        borderTop:`1px solid rgba(226,232,240,0.6)`,
+        borderTop:"1px solid rgba(226,232,240,0.6)",
         padding:"18px 40px", fontSize:12, color:T.lo, textAlign:"center", fontFamily:bodyFont,
       }}>
         {u.footer}
