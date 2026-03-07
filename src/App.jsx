@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Demo from "./Demo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Scrollama, Step as ScrollamaStep } from "react-scrollama";
 import {
@@ -1005,6 +1006,9 @@ const DetailPanel = ({ proc, lang }) => {
 export default function App() {
   const [lang, setLang]         = useState("en");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [page, setPage]         = useState("main");
+
+  if (page === "demo") return <Demo lang={lang} setLang={setLang} onBack={() => setPage("main")} />;
 
   const rtl      = lang === "ar";
   const bodyFont = font(lang);
@@ -1030,6 +1034,21 @@ export default function App() {
       }}>
         <div style={{ maxWidth:1400, margin:"0 auto", display:"flex", justifyContent:"space-between", alignItems:"center", gap:20 }}>
           <img src="/minassa.svg" alt="منصة الشعب" style={{ height:38 }} />
+          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+          {/* Demo button */}
+          <button onClick={() => setPage("demo")} style={{
+            background:"transparent", color:T.indigo,
+            border:`1.5px solid ${T.indigo}`, borderRadius:9,
+            padding:"7px 16px", fontSize:13, fontWeight:600,
+            cursor:"pointer",
+            fontFamily: lang === "ar" ? "'Cairo',sans-serif" : "'Inter',sans-serif",
+            transition:"background 0.15s, color 0.15s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = T.indigo; e.currentTarget.style.color = "#fff"; }}
+            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = T.indigo; }}
+          >
+            {lang === "ar" ? "العرض التوضيحي" : "Platform Demo"}
+          </button>
           {/* Language toggle */}
           <div style={{ display:"flex", background:"rgba(255,255,255,0.6)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", border:"1.5px solid rgba(226,232,240,0.8)", borderRadius:12, padding:3 }}>
             {[["en","EN"],["ar","عر"]].map(([l, label]) => (
@@ -1045,6 +1064,7 @@ export default function App() {
                 fontFamily: l === "ar" ? "'Cairo',sans-serif" : "'Inter',sans-serif",
               }}>{label}</button>
             ))}
+          </div>
           </div>
         </div>
       </div>

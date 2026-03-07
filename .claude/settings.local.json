@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/charaf/Desktop/jspp/struct/live/**)",
+      "Bash(npm install)"
+    ]
+  }
+}
